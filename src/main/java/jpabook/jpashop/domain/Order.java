@@ -35,6 +35,7 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus status; // 주문상태
 
+    //==연관관계 메서드==//
     public void setMember(Member member) {
         this.member = member;
         member.getOrders().add(this);
@@ -48,5 +49,13 @@ public class Order {
         this.delivery = delivery;
         delivery.setOrder(this);
     }
+
+    //==생성 메서드==//
+
+
+    //==비즈니스 로직==//
+    /**
+     * 주문취소 트랜잭션 처리
+     */
 
 }
