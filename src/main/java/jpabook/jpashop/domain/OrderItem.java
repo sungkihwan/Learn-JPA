@@ -1,5 +1,6 @@
 package jpabook.jpashop.domain;
 
+
 import jpabook.jpashop.domain.item.Item;
 import lombok.AccessLevel;
 import lombok.Getter;
