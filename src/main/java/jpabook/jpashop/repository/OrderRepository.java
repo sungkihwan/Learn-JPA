@@ -1,6 +1,8 @@
 package jpabook.jpashop.repository;
 
-import jpabook.jpashop.domain.Member;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import jpabook.jpashop.domain.*;
 import jpabook.jpashop.domain.Order;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -93,40 +95,57 @@ public class OrderRepository {
         return query.getResultList();
     }
 
-    public List<Order> findAllWithMemberDelivery() {
+    public List<Order> findAllWithMemberDelivery(int offset, int limit) {
         return em.createQuery(
                 "select o from Order o" +
                         " join fetch o.member m" +
-                        " join fetch o.delivery d", Order.class
-        ).getResultList();
+                        " join fetch o.delivery d", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
     }
 
-//    public List<Order> findAllByQueryDsl(OrderSearch orderSearch){
-//        QOrder order = QOrder.order;
-//        QMember member = QMember.member;
-//
-//        return query
-//                .select(order)
-//                .from(order)
-//                .joi(order.member, member)
-//                .where(statusEq(orderSearch.getOrderStatus()),
-//                        nameLike(orderSearch.getMemberName()))
-//                .limit(1000)
-//                ,fetch();
-//    }
-//
-//    private BooleanExpression statusEq(OrderStatus statusCond){
-//        if (statusCond == null) {
-//            return null;
-//        }
-//        return order.status.eq(statusCond);
-//    }
-//
-//    private BooleanExpressionPredicate nameLike(String nameCond) {
-//        if (!StringUtils.hasText(nameCond)) {
-//            return null
-//        }
-//        return member.name.like(nameCond);
-//    }
+    /**
+     * distinct로 중복제거 -> db와 distinct 기능이 다름.
+     * db의 distinct는 행 값이 모두 같아야 하는데, JPA에서 자체적으로 같은 객체인지(같은 주소값) 파악 후 제거해준다.
+     */
+    public List<Order> findAllWithItem() {
+        return em.createQuery(
+                "select distinct o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d" +
+                        " join fetch o.orderItems oi" +
+                        " join fetch oi.item i", Order.class)
+                .getResultList();
+    }
+
+    public List<Order> findAllByQueryDsl(OrderSearch orderSearch){
+        JPAQueryFactory query = new JPAQueryFactory(em);
+        QOrder order = QOrder.order;
+        QMember member = QMember.member;
+
+        return query
+                .select(order)
+                .from(order)
+                .join(order.member, member)
+                .where(statusEq(orderSearch.getOrderStatus()),
+                        nameLike(orderSearch.getMemberName()))
+                .limit(1000)
+                .fetch();
+    }
+
+    private BooleanExpression statusEq(OrderStatus statusCond){
+        if (statusCond == null) {
+            return null;
+        }
+        return QOrder.order.status.eq(statusCond);
+    }
+
+    private BooleanExpression nameLike(String nameCond) {
+        if (!StringUtils.hasText(nameCond)) {
+            return null;
+        }
+        return QMember.member.name.like(nameCond);
+    }
 
 }

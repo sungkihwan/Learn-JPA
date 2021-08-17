@@ -61,15 +61,15 @@ public class OrderSimpleApiController {
      * - fetch join으로 쿼리 1번 호출
      * 참고: fetch join에 대한 자세한 내용은 JPA 기본편 참고(정말 중요함)
      */
-    @GetMapping("/api/v3/simple-orders")
-    public List<SimpleOrderDto> orderV3() {
-        List<Order> orders = orderRepository.findAllWithMemberDelivery();
-        List<SimpleOrderDto> result = orders.stream()
-                .map(SimpleOrderDto::new)
-                .collect(toList());
-
-        return result;
-    }
+//    @GetMapping("/api/v3/simple-orders")
+//    public List<SimpleOrderDto> orderV3() {
+//        List<Order> orders = orderRepository.findAllWithMemberDelivery();
+//        List<SimpleOrderDto> result = orders.stream()
+//                .map(SimpleOrderDto::new)
+//                .collect(toList());
+//
+//        return result;
+//    }
 
     /**
      * V4. JPA에서 DTO로 바로 조회
