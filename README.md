@@ -1,7 +1,6 @@
-# JPA-Project
+# Store Application
 
-Project for learning
--> JPA Study
+to Study JPA
 
 - Spring Data JPA
 - Spring Web
